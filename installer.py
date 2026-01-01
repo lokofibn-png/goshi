@@ -2,7 +2,10 @@
 import subprocess
 import os
 import sys
+import os
 
+os.makedirs("logs", exist_ok=True)
+os.makedirs("config", exist_ok=True)
 def install_tool(tool_config, env):
     pkg_mgr = env["pkg_manager"]
     name = tool_config["name"]
