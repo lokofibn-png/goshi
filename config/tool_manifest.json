@@ -1,0 +1,148 @@
+{
+  "nmap": {
+    "name": "nmap",
+    "description": "Network scanner & mapper",
+    "dependencies": ["nmap"],
+    "launch_cmd": "nmap"
+  },
+  "maltego": {
+    "name": "maltego",
+    "description": "Link analysis & OSINT",
+    "dependencies": ["maltego"],
+    "launch_cmd": "maltego"
+  },
+  "shodan": {
+    "name": "shodan",
+    "description": "IoT search engine CLI",
+    "dependencies": ["python3", "pip"],
+    "source": ["pip3 install shodan"],
+    "launch_cmd": "shodan"
+  },
+  "recon-ng": {
+    "name": "recon-ng",
+    "description": "OSINT web reconnaissance framework",
+    "source": ["git clone https://github.com/lanmaster53/recon-ng.git /opt/recon-ng"],
+    "launch_cmd": "python3 /opt/recon-ng/recon-ng"
+  },
+  "gobuster": {
+    "name": "gobuster",
+    "description": "Directory/file brute-forcer",
+    "dependencies": ["gobuster"],
+    "launch_cmd": "gobuster"
+  },
+  "dirb": {
+    "name": "dirb",
+    "description": "Web content scanner",
+    "dependencies": ["dirb"],
+    "launch_cmd": "dirb"
+  },
+  "sqlmap": {
+    "name": "sqlmap",
+    "description": "SQL injection automation",
+    "dependencies": ["sqlmap"],
+    "launch_cmd": "sqlmap"
+  },
+  "burpsuite": {
+    "name": "burpsuite",
+    "description": "Web proxy & vulnerability scanner",
+    "dependencies": ["default-jdk"],
+    "source": ["wget -O /tmp/burp.sh https://portswigger.net/burp/releases/download?product=community&version=2023.12.1.5&type=Linux"],
+    "launch_cmd": "java -jar /opt/burp/burpsuite_community.jar"
+  },
+  "wireshark": {
+    "name": "wireshark",
+    "description": "Network protocol analyzer",
+    "dependencies": ["wireshark"],
+    "launch_cmd": "wireshark"
+  },
+  "aircrack-ng": {
+    "name": "aircrack-ng",
+    "description": "WiFi security auditing",
+    "dependencies": ["aircrack-ng"],
+    "launch_cmd": "aircrack-ng"
+  },
+  "hydra": {
+    "name": "hydra",
+    "description": "Login brute-forcer",
+    "dependencies": ["hydra"],
+    "launch_cmd": "hydra"
+  },
+  "john": {
+    "name": "john",
+    "description": "Password cracker",
+    "dependencies": ["john"],
+    "launch_cmd": "john"
+  },
+  "hashcat": {
+    "name": "hashcat",
+    "description": "Advanced hash cracking",
+    "dependencies": ["hashcat"],
+    "launch_cmd": "hashcat"
+  },
+  "nikto": {
+    "name": "nikto",
+    "description": "Web server scanner",
+    "dependencies": ["nikto"],
+    "launch_cmd": "nikto"
+  },
+  "netcat": {
+    "name": "netcat",
+    "description": "Swiss army knife of networking",
+    "dependencies": ["netcat"],
+    "launch_cmd": "nc"
+  },
+  "mimikatz": {
+    "name": "mimikatz",
+    "description": "Windows credential extraction",
+    "source": ["git clone https://github.com/gentilkiwi/mimikatz.git /opt/mimikatz"],
+    "launch_cmd": "wine /opt/mimikatz/x64/mimikatz.exe"
+  },
+  "empire": {
+    "name": "empire",
+    "description": "Post-exploitation framework",
+    "source": ["git clone https://github.com/BC-SECURITY/Empire.git /opt/empire", "cd /opt/empire && ./setup/install.sh"],
+    "launch_cmd": "python3 /opt/empire/empire"
+  },
+  "bloodhound": {
+    "name": "bloodhound",
+    "description": "Active Directory path analysis",
+    "dependencies": ["bloodhound"],
+    "launch_cmd": "bloodhound"
+  },
+  "responder": {
+    "name": "responder",
+    "description": "LLMNR/NBT-NS poisoning",
+    "dependencies": ["responder"],
+    "launch_cmd": "responder"
+  },
+  "ettercap": {
+    "name": "ettercap",
+    "description": "Man-in-the-middle toolkit",
+    "dependencies": ["ettercap-text-only"],
+    "launch_cmd": "ettercap"
+  },
+  "kismet": {
+    "name": "kismet",
+    "description": "Wireless network detector",
+    "dependencies": ["kismet"],
+    "launch_cmd": "kismet"
+  },
+  "zap": {
+    "name": "zaproxy",
+    "description": "OWASP Zed Attack Proxy",
+    "dependencies": ["zaproxy"],
+    "launch_cmd": "zaproxy"
+  },
+  "beef": {
+    "name": "beef",
+    "description": "Browser Exploitation Framework",
+    "source": ["git clone https://github.com/beefproject/beef.git /opt/beef", "cd /opt/beef && bundle install"],
+    "launch_cmd": "cd /opt/beef && ./beef"
+  },
+  "openvas": {
+    "name": "openvas",
+    "description": "Vulnerability scanner",
+    "dependencies": ["openvas"],
+    "launch_cmd": "gvm-setup && gvm-start"
+  }
+}

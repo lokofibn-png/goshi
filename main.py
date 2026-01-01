@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+import os
+import sys
+import time
+import platform
+from os_detector import detect_environment
+from installer import install_tool
+from launchers import launch_tool, show_tool_info
+
+# --- ASCII Boot Screen ---
+def boot_screen():
+    print("""
+\033[1;32m
+    ╔════════════════════════════════════════════════════════════════════╗
+    ║                                                                    ║
+    ║     ██████╗ ███████╗ █████╗ ███████╗ █████╗ ██╗  ██╗███████╗      ║
+    ║     ██╔══██╗██╔════╝██╔══██╗██╔════╝██╔══██╗██║ ██╔╝██╔════╝      ║
+    ║     ██████╔╝█████╗  ███████║███████╗███████║█████╔╝ █████╗        ║
+    ║     ██╔══██╗██╔══╝  ██╔══██║╚════██║██╔══██║██╔═██╗ ██╔══╝        ║
+    ║     ██║  ██║███████╗██║  ██║███████║██║  ██║██║  ██╗███████╗      ║
+    ║     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝      ║
+    ║                                                                    ║
+    ║          "We are the ghosts in the machine, testing the locks"     ║
+    ║                                                                    ║
+    ╚════════════════════════════════════════════════════════════════════╝
+    \033[0m
+    """)
+    time.sleep(2)
+
+# --- Main Menu ---
+class GhostProtocol:
+    def __init__(self):
+        self.env = detect_environment()
+        self.tools = self.load_manifest()
+        self.audit_log = "logs/audit.log"
+        os.makedirs("logs", exist_ok=True)
+        
+    def load_manifest(self):
+        import json
+        with open("config/tool_manifest.json", "r") as f:
+            return json.load(f)
+    
+    def log_action(self, action, tool):
+        with open(self.audit_log, "a") as f:
+            f.write(f"[{time.ctime()}] {action}: {tool} | USER: {os.getenv('USER')} | PID: {os.getpid()}\n")
+    
+    def display_menu(self):
+        while True:
+            os.system("clear" if self.env["os"] != "termux" else "clear")
+            print(f"\033[1;36m[ENVIRONMENT DETECTED: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
+            print("\n\033[1;33m[MAIN MENU]\033[0m")
+            print("=" * 50)
+            print("1.  Reconnaissance & Information Gathering")
+            print("2.  Vulnerability Assessment")
+            print("3.  Exploitation Frameworks")
+            print("4.  Post-Exploitation & Persistence")
+            print("5.  Password Attacks")
+            print("6.  Wireless Attacks")
+            print("7.  Web Application Testing")
+            print("8.  Network Analysis")
+            print("9.  Social Engineering")
+            print("10. Custom Attack Vectors (Ethical Testing Only)")
+            print("11. Install/Update All Tools")
+            print("12. Audit Trail")
+            print("0.  Exit to Void")
+            print("=" * 50)
+            
+            choice = input("\n\033[1;32m[?] Select Module: \033[0m").strip()
+            self.route_choice(choice)
+    
+    def route_choice(self, choice):
+        if choice == "0":
+            print("\n\033[1;31m[!] Terminating ghost protocol...\033[0m")
+            sys.exit(0)
+        elif choice == "1":
+            self.recon_menu()
+        elif choice == "2":
+            self.vuln_menu()
+        elif choice == "3":
+            self.exploit_menu()
+        elif choice == "10":
+            self.custom_attacks_menu()
+        elif choice == "11":
+            self.install_all()
+        elif choice == "12":
+            self.show_audit()
+        else:
+            print("\n\033[1;31m[!] Module not yet implemented\033[0m")
+            time.sleep(1)
+    
+    def recon_menu(self):
+        while True:
+            print("\n\033[1;34m[RECONNAISSANCE SUITES]\033[0m")
+            print("- - - - - - - - - - - - - - - - - - - - - -")
+            tools = ["nmap", "maltego", "shodan", "recon-ng", "gobuster", "dirb"]
+            for idx, tool in enumerate(tools, 1):
+                print(f"{idx}. {tool.upper()} - {self.tools[tool]['description']}")
+            print("0. Back")
+            
+            c = input("\n[?] Tool: ").strip()
+            if c == "0": break
+            try:
+                tool_name = tools[int(c)-1]
+                self.log_action("LAUNCH", tool_name)
+                launch_tool(self.tools[tool_name], self.env)
+            except: pass
+    
+    def custom_attacks_menu(self):
+        print("\n\033[1;35m[CUSTOM ATTACK VECTORS]\033[0m")
+        print("⚠️  \033[1;33mETHICAL TESTING ONLY - AUTHORIZED TARGETS ONLY\033[0m")
+        print("=" * 60)
+        print("1. Spectral DDoS Simulator (Localhost Stress Test)")
+        print("2. SQL Wraith (Vulnerable WebApp Demo + Scanner)")
+        print("3. Packet Phantom (ICMP/UDP/TCP Crafting)")
+        print("4. Hash Ritual (Automated Cracking Orchestrator)")
+        print("0. Return to Mainframe")
+        
+        c = input("\n[?] Vector: ").strip()
+        if c == "1":
+            self.log_action("CUSTOM_DDOS", "spectral_ddos.py")
+            os.system("python3 custom_tools/spectral_ddos.py")
+        elif c == "2":
+            self.log_action("CUSTOM_SQLI", "sql_wraith.py")
+            os.system("python3 custom_tools/sql_wraith.py")
+        elif c == "3":
+            self.log_action("CUSTOM_PACKET", "packet_phantom.py")
+            os.system("python3 custom_tools/packet_phantom.py")
+        elif c == "4":
+            self.log_action("CUSTOM_HASH", "hash_ritual.py")
+            os.system("python3 custom_tools/hash_ritual.py")
+    
+    def install_all(self):
+        print("\n\033[1;33m[!] Installing full suite. This will take time...\033[0m")
+        confirm = input("Type 'HELL YES' to confirm: ")
+        if confirm != "HELL YES":
+            return
+        
+        for tool_name, config in self.tools.items():
+            print(f"\n[*] Installing {tool_name}...")
+            self.log_action("INSTALL", tool_name)
+            install_tool(config, self.env)
+        
+        print("\n\033[1;32m[✓] Ghost protocol fully armed.\033[0m")
+    
+    def show_audit(self):
+        print("\n\033[1;36m[ETHICAL USAGE AUDIT TRAIL]\033[0m")
+        print("- - - - - - - - - - - - - - - - - - - - - - - -")
+        try:
+            with open(self.audit_log, "r") as f:
+                print(f.read())
+        except FileNotFoundError:
+            print("No audit trail yet. Actions are being logged.")
+        input("\nPress Enter to continue...")
+
+if __name__ == "__main__":
+    boot_screen()
+    ghost = GhostProtocol()
+    ghost.display_menu()
