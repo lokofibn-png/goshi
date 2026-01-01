@@ -2,7 +2,6 @@
 import subprocess
 import os
 import sys
-import os
 
 os.makedirs("logs", exist_ok=True)
 os.makedirs("config", exist_ok=True)
