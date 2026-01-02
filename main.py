@@ -28,6 +28,7 @@ def boot_screen():
     """)
     time.sleep(2)
 
+
 # --- Ghost Protocol Class ----------------------------------------------
 class GhostProtocol:
     def __init__(self):
@@ -216,6 +217,7 @@ class GhostProtocol:
 
     def vuln_menu(self): pass
     def exploit_menu(self): pass
+
 
 # --- Cathedral Doors ----------------------------------------------------
 if __name__ == "__main__":
