@@ -131,7 +131,8 @@ class GhostProtocol:
             time.sleep(1)
 
     # ──────────────── Sub-Menus ────────────────
-    def recon_menu(self):
+        def recon_menu(self):
+        """Dynamically load and run reconnaissance suite."""
         from tools.reconnaissance import show_menu
         show_menu(self.env, self.tools, self.log_action, launch_tool)
 
