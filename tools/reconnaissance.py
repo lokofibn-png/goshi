@@ -9,6 +9,7 @@ This file aggregates all reconnaissance tools and provides a unified menu.
 import os
 import glob
 import importlib.util
+import time
 
 # ANSI Colors
 C = {
@@ -20,22 +21,22 @@ C = {
 def load_recon_tools():
     """Dynamically load all reconnaissance tool modules."""
     tools = {}
-    for path in glob.glob("tools/*.py"):
-        if path.endswith(("reconnaissance.py", "__init__.py")): 
-            continue
-        module_name = os.path.basename(path)[:-3]
-        spec = importlib.util.spec_from_file_location(module_name, path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        
-        if hasattr(module, "TOOL") and module.TOOL.get("category") == "reconnaissance":
-            tools[module.TOOL["name"]] = module.TOOL
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    for filename in os.listdir(base_dir):
+        if filename.endswith(".py") and filename not in ["reconnaissance.py", "__init__.py"]:
+            module_name = filename[:-3]
+            spec = importlib.util.spec_from_file_location(module_name, os.path.join(base_dir, filename))
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            
+            if hasattr(module, "TOOL") and module.TOOL.get("category") == "reconnaissance":
+                tools[module.TOOL["name"]] = module.TOOL
     
     return tools
 
 def show_menu(env, master_tools, log_action, launch_tool):
     """Display interactive menu for all reconnaissance tools."""
-    # Load fresh from disk to catch updates
     category_tools = load_recon_tools()
     
     if not category_tools:
@@ -46,38 +47,59 @@ def show_menu(env, master_tools, log_action, launch_tool):
     while True:
         os.system("clear" if env["os"] != "termux" else "clear")
         
+        # Header
         print(f"{C['b']}")
-        print("╔════════════════════════════════════════════════════════════════╗")
-        print("║  RECONNAISSANCE & INFORMATION GATHERING                        ║")
-        print("║  ⚠️  ETHICAL USE ONLY - AUTHORIZED TARGETS ONLY               ║")
-        print("╚════════════════════════════════════════════════════════════════╝")
-        print(f"{C['x']}")
+        print("╔═══════════════════════════════════════════════════════════════════╗")
+        print("║          RECONNAISSANCE & INFORMATION GATHERING                   ║")
+        print("║  ⚠️  ETHICAL USE ONLY – AUTHORIZED TARGETS ONLY                  ║")
+        print("╚═══════════════════════════════════════════════════════════════════╝")
+        print(f"{C['x']}\n")
 
-        for idx, (name, cfg) in enumerate(category_tools.items(), 1):
-            print(f"{C['y']}{idx:2d}. {C['c']}{name.upper():<12}{C['x']}{C['y']} - {cfg['description'][:50]}...{C['x']}")
-        print(f"{C['y']} 0. {C['r']}Return{C['x']}")
-        print(f"{C['b']}{'=' * 64}{C['x']}")
+        # Tool list
+        tool_list = list(category_tools.items())
+        for idx, (name, cfg) in enumerate(tool_list, 1):
+            desc = cfg['description'][:55] + "..." if len(cfg['description']) > 55 else cfg['description']
+            print(f" {C['y']}{idx:2d}.{C['x']} {C['c']}{name.upper():<12}{C['x']} – {desc}")
+        
+        print(f"\n {C['y']} 0.{C['x']} {C['r']}Return to Main Menu{C['x']}")
+        print(f"\n{C['b']}{'='*70}{C['x']}")
 
+        # Selection
         c = input(f"\n{C['g']}[?] Select Tool: {C['x']}").strip()
         if c == "0":
             break
 
         try:
-            tool_name = list(category_tools.keys())[int(c) - 1]
-            cfg = category_tools[tool_name]
+            tool_name = tool_list[int(c) - 1][0]
+            cfg = tool_list[int(c) - 1][1]
             
-            # Import the module and run its custom launcher
-            spec = importlib.util.spec_from_file_location(tool_name, f"tools/{tool_name}.py")
+            # Import and execute
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            spec = importlib.util.spec_from_file_location(tool_name, os.path.join(base_dir, f"{tool_name}.py"))
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             
-            if hasattr(module, "run"):
-                module.run(env, master_tools, log_action, launch_tool)
-            else:
-                # Fallback to generic launch
-                log_action("LAUNCH", tool_name)
-                launch_tool(cfg, env)
+            log_action("LAUNCH", tool_name)
+            module.run(env, master_tools, log_action, launch_tool)
                 
+        except (IndexError, ValueError):
+            print(f"{C['r']}Invalid selection.{C['x']}")
+            time.sleep(1)
         except Exception as e:
             print(f"{C['r']}Error: {e}{C['x']}")
+            log_action("ERROR", f"recon_menu_{str(e)}")
             time.sleep(1)
+
+# ──────────────────────────────────────────────────────────────────────────
+if __name__ == "__main__":
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    
+    from os_detector import detect_environment
+    from launchers import launch_tool
+    
+    env = detect_environment()
+    log = lambda a, t: print(f"LOG: {a} - {t}")
+    
+    tools = load_recon_tools()
+    show_menu(env, tools, log, launch_tool)
