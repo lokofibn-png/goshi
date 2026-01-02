@@ -1,5 +1,4 @@
 GOSHI – Ghost Protocol Arsenal
-
 A cross-platform ethical hacking toolkit that detects your environment and builds the arsenal you need.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -268,7 +267,7 @@ Permission denied on Termux
 ---
 
 Contributing
-
+made by sskibls will update tools  if you find issues contact me or if you want features lokofibn@gmail.com
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-tool`)
 3. Add your tool to `config/tool_manifest.json`
