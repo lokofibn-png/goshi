@@ -3,46 +3,98 @@ import subprocess
 import os
 import sys
 
-os.makedirs("logs", exist_ok=True)
-os.makedirs("config", exist_ok=True)
+# ──────────────── Ethical Arsenal Constructor ────────────────
 def install_tool(tool_config, env):
-    pkg_mgr = env["pkg_manager"]
-    name = tool_config["name"]
-    
-    # Install dependencies
+    pkg_mgr = env["package_manager"]
+    name    = tool_config["name"]
+
+    # 0. Guarantee python3-pip exists before any pip call
+    if any("pip" in str(dep) for dep in tool_config.get("dependencies", [])) or \
+       tool_config.get("python_packages"):
+        ensure_pip(env)
+
+    # 1. System packages
     for dep in tool_config.get("dependencies", []):
         if dep == "metasploit":
             install_msf(env)
             continue
-        
-        print(f"  [*] Installing {dep}...")
+        if dep in ("pip", "python3-pip"):        # already handled
+            continue
+
+        print(f"  [*] Installing {dep}…")
         cmd = []
-        
-        if pkg_mgr == "pkg":
+        if pkg_mgr == "pkg":                     # Termux
             cmd = ["pkg", "install", "-y", dep]
         elif pkg_mgr == "apt":
             cmd = ["apt", "install", "-y", dep]
         elif pkg_mgr == "pacman":
             cmd = ["pacman", "-S", "--noconfirm", dep]
-        elif pkg_mgr == "yum" or pkg_mgr == "dnf":
+        elif pkg_mgr in ("yum", "dnf"):
             cmd = [pkg_mgr, "install", "-y", dep]
-        
+
         if cmd:
             subprocess.run(cmd, stderr=subprocess.DEVNULL)
-    
-    # Install from source if needed
+
+    # 2. Python packages via pip (always use -m pip for portability)
+    for py_pkg in tool_config.get("python_packages", []):
+        print(f"  [*] Pip-installing {py_pkg}…")
+        subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", py_pkg],
+                       stderr=subprocess.DEVNULL)
+
+    # 3. Source builds / clones
     if tool_config.get("source"):
-        print(f"  [*] Cloning {name} from source...")
+        print(f"  [*] Cloning {name} from source…")
         for cmd in tool_config["source"]:
-            subprocess.run(cmd.split(), stderr=subprocess.DEVNULL)
+            subprocess.run(cmd, shell=True, stderr=subprocess.DEVNULL)
+
+
+def ensure_pip(env):
+    """Bootstrap python3 -m pip if absent."""
+    test = subprocess.run([sys.executable, "-m", "pip", "--version"],
+                          capture_output=True, text=True)
+    if test.returncode == 0:
+        return
+
+    print("  [*] Bootstrapping pip…")
+    pkg_mgr = env["package_manager"]
+
+    if pkg_mgr in ("apt", "pkg"):
+        subprocess.run(["apt", "update"], stderr=subprocess.DEVNULL)
+        subprocess.run(["apt", "install", "-y", "python3-pip"], stderr=subprocess.DEVNULL)
+    elif pkg_mgr == "pacman":
+        subprocess.run(["pacman", "-S", "--noconfirm", "python-pip"], stderr=subprocess.DEVNULL)
+    elif pkg_mgr in ("yum", "dnf"):
+        subprocess.run([pkg_mgr, "install", "-y", "python3-pip"], stderr=subprocess.DEVNULL)
+
+    # Final safety net: get-pip.py
+    if subprocess.run([sys.executable, "-m", "pip", "--version"], capture_output=True).returncode != 0:
+        subprocess.run([
+            "curl", "-sSL", "https://bootstrap.pypa.io/get-pip.py", "-o", "/tmp/get-pip.py"
+        ], stderr=subprocess.DEVNULL)
+        subprocess.run([sys.executable, "/tmp/get-pip.py", "--user"], stderr=subprocess.DEVNULL)
+
 
 def install_msf(env):
-    print("  [*] Installing Metasploit Framework...")
+    """Metasploit special-case installer (Termux vs Linux)."""
     if env["os"] == "termux":
-        subprocess.run(["pkg", "install", "-y", "wget", "curl"], stderr=subprocess.DEVNULL)
-        subprocess.run(["wget", "https://raw.githubusercontent.com/Hax4us/Metasploit_termux/master/metasploit.sh"], stderr=subprocess.DEVNULL)
-        subprocess.run(["bash", "metasploit.sh"], stderr=subprocess.DEVNULL)
+        deps = ["wget", "curl"]
+        for d in deps:
+            subprocess.run(["pkg", "install", "-y", d], stderr=subprocess.DEVNULL)
+        subprocess.run([
+            "wget", "-q", "https://raw.githubusercontent.com/Hax4us/Metasploit_termux/master/metasploit.sh",
+            "-O", "/tmp/msf.sh"
+        ], stderr=subprocess.DEVNULL)
+        subprocess.run(["bash", "/tmp/msf.sh"], stderr=subprocess.DEVNULL)
     else:
-        subprocess.run(["curl", "https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb", "-o", "msfinstall"], stderr=subprocess.DEVNULL)
-        subprocess.run(["chmod", "+x", "msfinstall"], stderr=subprocess.DEVNULL)
-        subprocess.run(["./msfinstall"], stderr=subprocess.DEVNULL)
+        subprocess.run([
+            "curl", "-sSL",
+            "https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb",
+            "-o", "/tmp/msfinstall"
+        ], stderr=subprocess.DEVNULL)
+        subprocess.run(["chmod", "+x", "/tmp/msfinstall"], stderr=subprocess.DEVNULL)
+        subprocess.run(["/tmp/msfinstall"], stderr=subprocess.DEVNULL)
+
+
+# Ensure directories exist on first import
+os.makedirs("logs", exist_ok=True)
+os.makedirs("config", exist_ok=True)
