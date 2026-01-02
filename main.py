@@ -146,6 +146,55 @@ class GhostProtocol:
         print("\n\033[1;32m[✓] Ghost protocol fully armed.\033[0m")
     
     def show_audit(self):
+           def update_arsenal(self):
+        print("\n\033[1;35m[UPDATE PROTOCOL] Syncing with upstream & upgrading tools...\033[0m")
+        self.log_action("UPDATE", "arsenal")
+
+        # 1. Self-update from git
+        print("\n[*] Git pull...")
+        g = subprocess.run(["git", "pull"], capture_output=True, text=True)
+        if g.returncode == 0 and "Already up to date" not in g.stdout:
+            print("\033[1;32m[✓] New code pulled.\033[0m")
+        else:
+            print("[*] No new commits.")
+
+        # 2. Upgrade Python packages
+        print("\n[*] Upgrading Python dependencies...")
+        ensured = set()
+        for tool_name, cfg in self.tools.items():
+            for py_pkg in cfg.get("python_packages", []):
+                if py_pkg in ensured:
+                    continue
+                ensured.add(py_pkg)
+                print(f"    upgrading {py_pkg} ...")
+                subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", py_pkg],
+                               stderr=subprocess.DEVNULL)
+
+        # 3. Re-build auto_update tools
+        print("\n[*] Re-building tools that request auto-update ...")
+        for tool_name, cfg in self.tools.items():
+            if cfg.get("auto_update"):
+                print(f"    rebuilding {tool_name} ...")
+                for cmd in cfg["source"]:
+                    subprocess.run(cmd, shell=True, stderr=subprocess.DEVNULL)
+
+        # 4. Optional system upgrade
+        ans = input("\n[?] Also upgrade system packages? (may be large) (y/N): ").strip().lower()
+        if ans == "y":
+            print("\n[*] System upgrade ...")
+            pm = self.env["package_manager"]
+            if pm == "apt":
+                subprocess.run(["apt", "update"], stderr=subprocess.DEVNULL)
+                subprocess.run(["apt", "upgrade", "-y"], stderr=subprocess.DEVNULL)
+            elif pm == "pacman":
+                subprocess.run(["pacman", "-Syu", "--noconfirm"], stderr=subprocess.DEVNULL)
+            elif pm in ("yum", "dnf"):
+                subprocess.run([pm, "upgrade", "-y"], stderr=subprocess.DEVNULL)
+            elif pm == "pkg":  # termux
+                subprocess.run(["pkg", "upgrade", "-y"], stderr=subprocess.DEVNULL)
+
+        print("\n\033[1;32m[✓] Arsenal refreshed. Restart main.py to load any new code.\033[0m")
+        input("\nPress Enter to return to menu...")
         print("\n\033[1;36m[ETHICAL USAGE AUDIT TRAIL]\033[0m")
         print("- - - - - - - - - - - - - - - - - - - - - - - -")
         try:
