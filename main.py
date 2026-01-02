@@ -107,23 +107,9 @@ class GhostProtocol:
             time.sleep(1)
 
     # ──────────────── Sub-Menus ────────────────
-    def recon_menu(self):
-        while True:
-            print("\n\033[1;34m[RECONNAISSANCE SUITES]\033[0m")
-            print("- " * 30)
-            tools = ["nmap", "maltego", "shodan", "recon-ng", "gobuster", "dirb"]
-            for idx, tool in enumerate(tools, 1):
-                print(f"{idx}. {tool.upper()} - {self.tools[tool]['description']}")
-            print("0. Back")
-            c = input("\n[?] Tool: ").strip()
-            if c == "0":
-                break
-            try:
-                tool_name = tools[int(c) - 1]
-                self.log_action("LAUNCH", tool_name)
-                launch_tool(self.tools[tool_name], self.env)
-            except (IndexError, ValueError):
-                pass
+      def recon_menu(self):
+        from tools.reconnaissance import show_menu
+        show_menu(self.env, self.tools, self.log_action, launch_tool)
 
     def custom_attacks_menu(self):
         print("\n\033[1;35m[CUSTOM ATTACK VECTORS]\033[0m")
