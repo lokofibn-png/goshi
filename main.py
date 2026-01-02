@@ -73,6 +73,8 @@ class GhostProtocol:
         if choice == "0":
             print("\n\033[1;31m[!] Terminating ghost protocol...\033[0m")
             sys.exit(0)
+       elif choice == "13":
+    self.update_arsenal()
         elif choice == "1":
             self.recon_menu()
         elif choice == "2":
