@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import importlib.util 
+import glob
+import json
 import os
 import sys
 import time
@@ -37,10 +40,7 @@ class GhostProtocol:
         self.audit_log = "logs/audit.log"
         os.makedirs("logs", exist_ok=True)
 
-        def load_manifest(self):
-        import importlib.util
-        import glob
-        import json
+        def load_manifest(self)
         
         tools = {}
         tools_dir = os.path.join(os.path.dirname(__file__), "tools")
