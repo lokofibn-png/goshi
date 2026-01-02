@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-import importlib.util 
-import glob
-import json
 import os
 import sys
 import time
@@ -40,7 +37,7 @@ class GhostProtocol:
         self.audit_log = "logs/audit.log"
         os.makedirs("logs", exist_ok=True)
 
-            def load_manifest(self):
+    def load_manifest(self):
         """
         Dynamically load tools from:
         1. tools/*.py (modular, one file per tool)
@@ -78,13 +75,6 @@ class GhostProtocol:
                     tools = json.load(f)
             except Exception as e:
                 print(f"Warning: Failed to load legacy manifest: {e}")
-        
-        return tools
-        
-        # Legacy fallback
-        if not tools and os.path.exists("config/tool_manifest.json"):
-            with open("config/tool_manifest.json", "r") as f:
-                tools = json.load(f)
         
         return tools
 
@@ -130,7 +120,7 @@ class GhostProtocol:
             choice = input("\n\033[1;32m[?] Select Module: \033[0m").strip()
             self.route_choice(choice)
 
-        def route_choice(self, choice):
+    def route_choice(self, choice):
         if choice == "0":
             print("\n\033[1;31m[!] Terminating ghost protocol...\033[0m")
             sys.exit(0)
@@ -153,8 +143,7 @@ class GhostProtocol:
             time.sleep(1)
 
     # ──────────────── Sub-Menus ────────────────
-            def recon_menu(self):
-        """Dynamically load reconnaissance suite."""
+    def recon_menu(self):
         from tools.reconnaissance import show_menu
         show_menu(self.env, self.tools, self.log_action, launch_tool)
 
@@ -179,7 +168,7 @@ class GhostProtocol:
             os.system("python3 custom_tools/packet_phantom.py")
         elif c == "4":
             self.log_action("CUSTOM_HASH", "hash_ritual.py")
-            os.system("python3 custom_tools/packet_phantom.py")
+            os.system("python3 custom_tools/hash_ritual.py")
 
     def install_all(self):
         print("\n\033[1;33m[!] Installing full suite. This will take time...\033[0m")
