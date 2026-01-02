@@ -86,15 +86,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     """)
     print(r"""
 \033[1;32m
-     .o88o.                               o8o                .
-     888 `"                               `"'              .o8
-    o888oo   .oooo.o  .ooooo.   .ooooo.  oooo   .ooooo.  .o888oo oooo    ooo
-     888    d88(  "8 d88' 88b d88' `"Y8  888  d88' `88b   888    `88.  .8'
-     888    `"Y88b.  888   888 888        888  888ooo888   888     `88..8'
-     888    o.  )88b 888   888 888   .o8  888  888    .o   888 .    `888'
-    o888o   8""888P' `Y8bod8P' `Y8bod8P' o888o `Y8bod8P'   "888"      d8'
-                                                                .o...P'
-                                                                XER0'     \033[0m
+    \033[0m
     """)
     time.sleep(1.5)
 # --- Ghost Protocol Class ----------------------------------------------
@@ -114,10 +106,25 @@ class GhostProtocol:
         with open(self.audit_log, "a") as f:
             f.write(f"[{time.ctime()}] {action}: {tool} | USER: {os.getenv('USER')} | PID: {os.getpid()}\n")
 
-    def display_menu(self):
+       def display_menu(self):
         while True:
             os.system("clear" if self.env["os"] != "termux" else "clear")
-            print(f"\033[1;36m[ENVIRONMENT: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
+
+            # --- compact FSociety sigil --------------------------
+            print(r"""
+\033[1;32m
+                  .o88o.                               o8o                .
+                  888 `"                               `"'              .o8
+                 o888oo   .oooo.o  .ooooo.   .ooooo.  oooo   .ooooo.  .o888oo oooo    ooo
+                  888    d88(  "8 d88' 88b d88' `"Y8  888  d88' `88b   888    `88.  .8'
+                  888    `"Y88b.  888   888 888        888  888ooo888   888     `88..8'
+                  888    o.  )88b 888   888 888   .o8  888  888    .o   888 .    `888'
+                 o888o   8""888P' `Y8bod8P' `Y8bod8P' o888o `Y8bod8P'   "888"      d8'
+                                                                           .o...P'
+                                                                           XER0\033[0m
+            """)
+
+            print(f"\n\033[1;36m[ENVIRONMENT: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
             print("\n\033[1;33m[MAIN MENU]\033[0m")
             print("=" * 50)
             print("1.  Reconnaissance & Information Gathering")
@@ -138,8 +145,6 @@ class GhostProtocol:
 
             choice = input("\n\033[1;32m[?] Select Module: \033[0m").strip()
             self.route_choice(choice)
-
-    def route_choice(self, choice):
         if choice == "0":
             print("\n\033[1;31m[!] Terminating ghost protocol...\033[0m")
             sys.exit(0)
