@@ -261,7 +261,7 @@ class GhostProtocol:
         ans = input("\n[?] Also upgrade system packages? (may be large) (y/N): ").strip().lower()
         if ans == "y":
             print("\n[*] System upgrade ...")
-            pm = self.env["package_manager"]
+            pm = self.env["pkg_manager"]
             if pm == "apt":
                 subprocess.run(["apt", "update"], stderr=subprocess.DEVNULL)
                 subprocess.run(["apt", "upgrade", "-y"], stderr=subprocess.DEVNULL)
