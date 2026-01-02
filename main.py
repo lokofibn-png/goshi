@@ -37,10 +37,34 @@ class GhostProtocol:
         self.audit_log = "logs/audit.log"
         os.makedirs("logs", exist_ok=True)
 
-    def load_manifest(self):
+        def load_manifest(self):
+        import importlib.util
+        import glob
         import json
-        with open("config/tool_manifest.json", "r") as f:
-            return json.load(f)
+        
+        tools = {}
+        tools_dir = os.path.join(os.path.dirname(__file__), "tools")
+        
+        if os.path.exists(tools_dir):
+            for filename in os.listdir(tools_dir):
+                if filename.endswith(".py") and filename != "__init__.py":
+                    module_name = filename[:-3]
+                    spec = importlib.util.spec_from_file_location(
+                        module_name, 
+                        os.path.join(tools_dir, filename)
+                    )
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    
+                    if hasattr(module, "TOOL"):
+                        tools[module.TOOL["name"]] = module.TOOL
+        
+        # Legacy fallback
+        if not tools and os.path.exists("config/tool_manifest.json"):
+            with open("config/tool_manifest.json", "r") as f:
+                tools = json.load(f)
+        
+        return tools
 
     def log_action(self, action, tool):
         with open(self.audit_log, "a") as f:
