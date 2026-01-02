@@ -108,7 +108,7 @@ class GhostProtocol:
             choice = input("\n\033[1;32m[?] Select Module: \033[0m").strip()
             self.route_choice(choice)
 
-    def route_choice(self, choice):
+        def route_choice(self, choice):
         if choice == "0":
             print("\n\033[1;31m[!] Terminating ghost protocol...\033[0m")
             sys.exit(0)
