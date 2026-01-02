@@ -107,7 +107,7 @@ class GhostProtocol:
             time.sleep(1)
 
     # ──────────────── Sub-Menus ────────────────
-       def recon_menu(self):
+    def recon_menu(self):
         from tools.reconnaissance import show_menu
         show_menu(self.env, self.tools, self.log_action, launch_tool)
 
@@ -132,7 +132,7 @@ class GhostProtocol:
             os.system("python3 custom_tools/packet_phantom.py")
         elif c == "4":
             self.log_action("CUSTOM_HASH", "hash_ritual.py")
-            os.system("python3 custom_tools/hash_ritual.py")
+            os.system("python3 custom_tools/packet_phantom.py")
 
     def install_all(self):
         print("\n\033[1;33m[!] Installing full suite. This will take time...\033[0m")
