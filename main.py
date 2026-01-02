@@ -121,9 +121,9 @@ class GhostProtocol:
                                                                            .o...P'
                                                                            XER0\033[0m
             """)
-                       print(f"\n\033[1;36m[ENVIRONMENT: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
-            print("\n\033[1;32mPrivacy is a myth—choose your weapon\033[0m")
-            print("\n\033[1;33m[MAIN MENU]\033[0m"))
+                     print(f"\n\033[1;36m[ENVIRONMENT: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
+            print("\033[1;32mPrivacy is a myth—choose your weapon\033[0m")
+            print("\033[1;33m[MAIN MENU]\033[0m")
             print("=" * 50)
             print("1.  Reconnaissance & Information Gathering")
             print("2.  Vulnerability Assessment")
