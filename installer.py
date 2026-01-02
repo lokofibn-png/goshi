@@ -93,7 +93,30 @@ def install_msf(env):
         ], stderr=subprocess.DEVNULL)
         subprocess.run(["chmod", "+x", "/tmp/msfinstall"], stderr=subprocess.DEVNULL)
         subprocess.run(["/tmp/msfinstall"], stderr=subprocess.DEVNULL)
-
+def get_merged_manifest():
+    """Merge modular tools from tools/ folder + legacy JSON."""
+    tools = {}
+    
+    # Load from tools/ directory
+    import glob
+    for path in glob.glob("tools/*.py"):
+        if path.endswith(("reconnaissance.py", "__init__.py")):
+            continue
+        module_name = os.path.basename(path)[:-3]
+        spec = importlib.util.spec_from_file_location(module_name, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        if hasattr(module, "TOOL"):
+            tools[module.TOOL["name"]] = module.TOOL
+    
+    # Legacy fallback
+    if os.path.exists("config/tool_manifest.json"):
+        import json
+        with open("config/tool_manifest.json", "r") as f:
+            tools.update(json.load(f))
+    
+    return tools
 
 # Ensure directories exist on first import
 os.makedirs("logs", exist_ok=True)
