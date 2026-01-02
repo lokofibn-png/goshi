@@ -5,7 +5,7 @@ import sys
 
 # ──────────────── Ethical Arsenal Constructor ────────────────
 def install_tool(tool_config, env):
-    pkg_mgr = env["package_manager"]
+    pkg_mgr = env["pkg_manager"]  # ← FIXED: was "package_manager"
     name    = tool_config["name"]
 
     # 0. Guarantee python3-pip exists before any pip call
@@ -56,7 +56,7 @@ def ensure_pip(env):
         return
 
     print("  [*] Bootstrapping pip…")
-    pkg_mgr = env["package_manager"]
+    pkg_mgr = env["pkg_manager"]  # ← FIXED: was "package_manager"
 
     if pkg_mgr in ("apt", "pkg"):
         subprocess.run(["apt", "update"], stderr=subprocess.DEVNULL)
@@ -98,3 +98,4 @@ def install_msf(env):
 # Ensure directories exist on first import
 os.makedirs("logs", exist_ok=True)
 os.makedirs("config", exist_ok=True)
+
