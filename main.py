@@ -224,3 +224,4 @@ if __name__ == "__main__":
     boot_screen()
     ghost = GhostProtocol()
     ghost.display_menu()
+    
