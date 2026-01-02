@@ -40,7 +40,7 @@ class GhostProtocol:
         self.audit_log = "logs/audit.log"
         os.makedirs("logs", exist_ok=True)
 
-        def load_manifest(self)
+        def load_manifest(self):
         
         tools = {}
         tools_dir = os.path.join(os.path.dirname(__file__), "tools")
