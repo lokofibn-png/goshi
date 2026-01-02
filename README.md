@@ -15,4 +15,4 @@ This framework is **FOR AUTHORIZED SECURITY TESTING ONLY**. By executing this co
 ---
 
 *The ghost in the machine watches, and it remembers.*
-TISIS BETA STILL WORKING ON THIS
+TIS IS BETA STILL WORKING ON THIS
