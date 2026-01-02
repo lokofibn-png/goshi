@@ -27,68 +27,7 @@ def boot_screen():
     \033[0m
     """)
     time.sleep(2)
-# --- FSociety Boot Screen (exact bytes you cloned) ----------------------
-def boot_screen():
-    print(r"""
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-XX                                                                          XX
-XX   MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMMMMMMMMMMssssssssssssssssssssssssssMMMMMMMMMMMMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMMMMMss'''                          '''ssMMMMMMMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMyy''                                    ''yyMMMMMMMMMMMM   XX
-XX   MMMMMMMMyy''                                            ''yyMMMMMMMM   XX
-XX   MMMMMy''                                                    ''yMMMMM   XX
-XX   MMMy'                                                          'yMMM   XX
-XX   Mh'                                                              'hM   XX
-XX   -                                                                  -   XX
-XX                                                                          XX
-XX   ::                                                                ::   XX
-XX   MMhh.        ..hhhhhh..                      ..hhhhhh..        .hhMM   XX
-XX   MMMMMh   ..hhMMMMMMMMMMhh.                .hhMMMMMMMMMMhh..   hMMMMM   XX
-XX   ---MMM .hMMMMdd:::dMMMMMMMhh..        ..hhMMMMMMMd:::ddMMMMh. MMM---   XX
-XX   MMMMMM MMmm''      'mmMMMMMMMMyy.  .yyMMMMMMMMmm'      ''mmMM MMMMMM   XX
-XX   ---mMM ''             'mmMMMMMMMM  MMMMMMMMmm'             '' MMm---   XX
-XX   yyyym'    .              'mMMMMm'  'mMMMMm'              .    'myyyy   XX
-XX   mm''    .y'     ..yyyyy..  ''''      ''''  ..yyyyy..     'y.    ''mm   XX
-XX           MN    .sMMMMMMMMMss.   .    .   .ssMMMMMMMMMs.    NM           XX
-XX           N   MMMMMMMMMMMMMN   M    M   NMMMMMMMMMMMMM   N           XX
-XX            +  .sMNNNNNMMMMMN+   N    N   +NMMMMMNNNNNMs.  +            XX
-XX              o+++     ++++Mo    M      M    oM++++     +++o              XX
-XX                                oo      oo                                XX
-XX           oM                 oo          oo                 Mo           XX
-XX         oMMo                M              M                oMMo         XX
-XX       +MMMM                 s              s                 MMMM+       XX
-XX      +MMMMM+            +++NNNN+        +NNNN+++            +MMMMM+      XX
-XX     +MMMMMMM+       ++NNMMMMMMMMN+    +NMMMMMMMMNN++       +MMMMMMM+     XX
-XX     MMMMMMMMMNN+++NNMMMMMMMMMMMMMMNNNNMMMMMMMMMMMMMMNN+++NNMMMMMMMMM     XX
-XX     yMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMy     XX
-XX   m  yMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMy  m   XX
-XX   MMm yMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMy mMM   XX
-XX   MMMm .yyMMMMMMMMMMMMMMMM     MMMMMMMMMM     MMMMMMMMMMMMMMMMyy. mMMM   XX
-XX   MMMMd   ''''hhhhh       odddo          obbbo        hhhh''''   dMMMM   XX
-XX   MMMMMd             'hMMMMMMMMMMddddddMMMMMMMMMMh'             dMMMMM   XX
-XX   MMMMMMd              'hMMMMMMMMMMMMMMMMMMMMMMh'              dMMMMMM   XX
-XX   MMMMMMM-               ''ddMMMMMMMMMMMMMMdd''               -MMMMMMM   XX
-XX   MMMMMMMM                   '::dddddddd::'                   MMMMMMMM   XX
-XX   MMMMMMMM-                                                  -MMMMMMMM   XX
-XX   MMMMMMMMM                                                  MMMMMMMMM   XX
-XX   MMMMMMMMMy                                                yMMMMMMMMM   XX
-XX   MMMMMMMMMMy.                                            .yMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMy.                                        .yMMMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMMMy.                                    .yMMMMMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMMMMMs.                                .sMMMMMMMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMMMMMMMss.           ....           .ssMMMMMMMMMMMMMMMMMM   XX
-XX   MMMMMMMMMMMMMMMMMMMMNo         oNNNNo         oNMMMMMMMMMMMMMMMMMMMM   XX
-XX                                                                          XX
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    """)
-    print(r"""
-\033[1;32m
-    \033[0m
-    """)
-    time.sleep(1.5)
+
 # --- Ghost Protocol Class ----------------------------------------------
 class GhostProtocol:
     def __init__(self):
@@ -121,7 +60,7 @@ class GhostProtocol:
                                                                            .o...P'
                                                                            XER0\033[0m
             """)
-                     print(f"\n\033[1;36m[ENVIRONMENT: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
+            print(f"\n\033[1;36m[ENVIRONMENT: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
             print("\033[1;32mPrivacy is a myth—choose your weapon\033[0m")
             print("\033[1;33m[MAIN MENU]\033[0m")
             print("=" * 50)
@@ -166,7 +105,7 @@ class GhostProtocol:
             print("\n\033[1;31m[!] Module not yet implemented\033[0m")
             time.sleep(1)
 
-    # (sub-menu stubs & update engine remain identical to last complete paste)
+    # ──────────────── Sub-Menus ────────────────
     def recon_menu(self):
         while True:
             print("\n\033[1;34m[RECONNAISSANCE SUITES]\033[0m")
@@ -229,6 +168,7 @@ class GhostProtocol:
             print("No audit trail yet. Actions are being logged.")
         input("\nPress Enter to continue...")
 
+    # ──────────────── Update Engine ────────────────
     def update_arsenal(self):
         print("\n\033[1;35m[UPDATE PROTOCOL] Syncing with upstream & upgrading tools...\033[0m")
         self.log_action("UPDATE", "arsenal")
