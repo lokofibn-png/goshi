@@ -40,24 +40,46 @@ class GhostProtocol:
         self.audit_log = "logs/audit.log"
         os.makedirs("logs", exist_ok=True)
 
-        def load_manifest(self):
+            def load_manifest(self):
+        """
+        Dynamically load tools from:
+        1. tools/*.py (modular, one file per tool)
+        2. config/tool_manifest.json (legacy fallback)
+        """
+        import json
+        import glob
+        import os
+        import importlib.util
         
         tools = {}
         tools_dir = os.path.join(os.path.dirname(__file__), "tools")
         
+        # Load modular tools from tools/ directory
         if os.path.exists(tools_dir):
             for filename in os.listdir(tools_dir):
-                if filename.endswith(".py") and filename != "__init__.py":
-                    module_name = filename[:-3]
-                    spec = importlib.util.spec_from_file_location(
-                        module_name, 
-                        os.path.join(tools_dir, filename)
-                    )
-                    module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module)
+                if filename.endswith(".py") and filename not in ["__init__.py", "reconnaissance.py"]:
+                    tool_name = filename[:-3]  # Remove .py
+                    module_path = os.path.join(tools_dir, filename)
                     
-                    if hasattr(module, "TOOL"):
-                        tools[module.TOOL["name"]] = module.TOOL
+                    try:
+                        spec = importlib.util.spec_from_file_location(tool_name, module_path)
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+                        
+                        if hasattr(module, "TOOL"):
+                            tools[module.TOOL["name"]] = module.TOOL
+                    except Exception as e:
+                        print(f"Warning: Failed to load {filename}: {e}")
+        
+        # Legacy fallback: load from JSON if no modular tools found
+        if not tools and os.path.exists("config/tool_manifest.json"):
+            try:
+                with open("config/tool_manifest.json", "r") as f:
+                    tools = json.load(f)
+            except Exception as e:
+                print(f"Warning: Failed to load legacy manifest: {e}")
+        
+        return tools
         
         # Legacy fallback
         if not tools and os.path.exists("config/tool_manifest.json"):
