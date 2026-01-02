@@ -62,6 +62,7 @@ class GhostProtocol:
             print("10. Custom Attack Vectors (Ethical Testing Only)")
             print("11. Install/Update All Tools")
             print("12. Audit Trail")
+            print("13. Update / Refresh Arsenal (git pull + pip upgrade + tool rebuild)")
             print("0.  Exit to Void")
             print("=" * 50)
             
