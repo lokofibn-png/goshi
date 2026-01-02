@@ -52,7 +52,7 @@ def update_all():
     if pm == "apt":
         log("System package upgrade …")
         subprocess.run(["apt", "update"], stderr=subprocess.DEVNULL)
-        subprocess.run(["apt", "upgrade", "-y"], stderr=subprocess.DEVNull)
+        subprocess.run(["apt", "upgrade", "-y"], stderr=subprocess.DEVNULL)
 
     log("Standalone update complete")
 
