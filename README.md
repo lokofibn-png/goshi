@@ -1,4 +1,4 @@
-no skid
+description was made by kimi k2
 GOSHI – Ghost Protocol Arsenal
 A cross-platform ethical hacking toolkit that detects your environment and builds the arsenal you need.
 
