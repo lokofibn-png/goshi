@@ -106,11 +106,9 @@ class GhostProtocol:
         with open(self.audit_log, "a") as f:
             f.write(f"[{time.ctime()}] {action}: {tool} | USER: {os.getenv('USER')} | PID: {os.getpid()}\n")
 
-       def display_menu(self):
+    def display_menu(self):
         while True:
             os.system("clear" if self.env["os"] != "termux" else "clear")
-
-            # --- compact FSociety sigil --------------------------
             print(r"""
 \033[1;32m
                   .o88o.                               o8o                .
@@ -123,7 +121,6 @@ class GhostProtocol:
                                                                            .o...P'
                                                                            XER0\033[0m
             """)
-
             print(f"\n\033[1;36m[ENVIRONMENT: {self.env['distro']} | PKG: {self.env['pkg_manager']}]\033[0m")
             print("\n\033[1;33m[MAIN MENU]\033[0m")
             print("=" * 50)
@@ -145,6 +142,8 @@ class GhostProtocol:
 
             choice = input("\n\033[1;32m[?] Select Module: \033[0m").strip()
             self.route_choice(choice)
+
+    def route_choice(self, choice):
         if choice == "0":
             print("\n\033[1;31m[!] Terminating ghost protocol...\033[0m")
             sys.exit(0)
@@ -166,7 +165,7 @@ class GhostProtocol:
             print("\n\033[1;31m[!] Module not yet implemented\033[0m")
             time.sleep(1)
 
-    # ──────────────── Sub-Menus ────────────────
+    # (sub-menu stubs & update engine remain identical to last complete paste)
     def recon_menu(self):
         while True:
             print("\n\033[1;34m[RECONNAISSANCE SUITES]\033[0m")
@@ -229,11 +228,9 @@ class GhostProtocol:
             print("No audit trail yet. Actions are being logged.")
         input("\nPress Enter to continue...")
 
-    # ──────────────── Update Engine ────────────────
     def update_arsenal(self):
         print("\n\033[1;35m[UPDATE PROTOCOL] Syncing with upstream & upgrading tools...\033[0m")
         self.log_action("UPDATE", "arsenal")
-
         # 1. Git pull
         print("\n[*] Git pull...")
         g = subprocess.run(["git", "pull"], capture_output=True, text=True)
@@ -241,7 +238,6 @@ class GhostProtocol:
             print("\033[1;32m[✓] New code pulled.\033[0m")
         else:
             print("[*] No new commits.")
-
         # 2. Python packages
         print("\n[*] Upgrading Python dependencies...")
         ensured = set()
@@ -253,7 +249,6 @@ class GhostProtocol:
                 print(f"    upgrading {py_pkg} ...")
                 subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", py_pkg],
                                stderr=subprocess.DEVNULL)
-
         # 3. Re-build auto-update tools
         print("\n[*] Re-building tools that request auto-update ...")
         for tool_name, cfg in self.tools.items():
@@ -261,7 +256,6 @@ class GhostProtocol:
                 print(f"    rebuilding {tool_name} ...")
                 for cmd in cfg["source"]:
                     subprocess.run(cmd, shell=True, stderr=subprocess.DEVNULL)
-
         # 4. Optional system upgrade
         ans = input("\n[?] Also upgrade system packages? (may be large) (y/N): ").strip().lower()
         if ans == "y":
@@ -276,11 +270,9 @@ class GhostProtocol:
                 subprocess.run([pm, "upgrade", "-y"], stderr=subprocess.DEVNULL)
             elif pm == "pkg":  # termux
                 subprocess.run(["pkg", "upgrade", "-y"], stderr=subprocess.DEVNULL)
-
         print("\n\033[1;32m[✓] Arsenal refreshed. Restart main.py to load any new code.\033[0m")
         input("\nPress Enter to return to menu...")
 
-    # (placeholder stubs for unbuilt menus)
     def vuln_menu(self): pass
     def exploit_menu(self): pass
 
